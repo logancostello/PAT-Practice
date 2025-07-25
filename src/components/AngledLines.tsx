@@ -1,14 +1,10 @@
 import { Line } from "@react-three/drei";
 import { Canvas } from '@react-three/fiber';
 
-type AngleInput = {
-	angle: number;    // angle in degrees
-	line1Length: number;
-	line2Length: number;
-};
+
 
 type AngleLinesProps = {
-	angleInput: AngleInput;
+	angle: number;
 	rotation: number; // rotation in degrees
 	size: number;     // pixels
 	label: number;
@@ -16,7 +12,8 @@ type AngleLinesProps = {
 
 type Point3D = [number, number, number];
 
-export function AngledLines({ angleInput, rotation, size, label }: AngleLinesProps) {
+export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
+    const BASE_LENGTH = 3;
 	const CAMERA_Z = 5;
 	const FOV = 75;
 	const ASPECT_RATIO = 1;
@@ -26,10 +23,10 @@ export function AngledLines({ angleInput, rotation, size, label }: AngleLinesPro
 	const RANDOM_LENGTH_RANGE = 2.25;
 
 	// Add small random adjustments to inputs
-	const adjustedAngle = angleInput.angle + (Math.random() - 0.5) * 10; // ±5 degrees
+	const adjustedAngle = angle + (Math.random() - 0.5) * 10; // ±5 degrees
 	const adjustedRotation = rotation + (Math.random() - 0.5) * 20; // ±10 degrees
-	const adjustedLine1Length = angleInput.line1Length - Math.random() * RANDOM_LENGTH_RANGE;
-	const adjustedLine2Length = angleInput.line2Length - Math.random() * RANDOM_LENGTH_RANGE;
+	const adjustedLine1Length = BASE_LENGTH - Math.random() * RANDOM_LENGTH_RANGE;
+	const adjustedLine2Length = BASE_LENGTH - Math.random() * RANDOM_LENGTH_RANGE;
 
 	// Randomly add reflections
     // 1/2 chance of nothing

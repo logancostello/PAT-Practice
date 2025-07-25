@@ -1,10 +1,9 @@
 import './App.css'
-import { AngledLinesScene } from './components/AngledLines'
+import { FourAngledLines } from './components/FourAngledLines'
 
 function App() {
-
   return (
-      <AngledLinesScene angle={ 120 }/>
+    <FourAngledLines trueAngle={90} angleOffset={5} />
   )
 }
 
