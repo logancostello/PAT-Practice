@@ -32,19 +32,24 @@ export function AngledLinesScene({ angleInput, rotation, size, label }: AngleLin
 	const adjustedLine2Length = angleInput.line2Length - Math.random() * RANDOM_LENGTH_RANGE;
 
 	// Randomly add reflections
-	const reflectionChance = Math.random();
+    // 1/2 chance of nothing
+    // 1/6 chance of just x reflection
+    // 1/6 chance of just y reflection
+    // 1/6 chance of both reflections
 	let reflectX = false;
 	let reflectY = false;
 
-	if (reflectionChance > 0.5) { // 50% chance of having reflections
-		const reflectionType = Math.random();
-		if (reflectionType < 0.5) {
-			reflectX = true; // 25% chance overall
+	if (Math.random() > 0.5) { 
+        const reflectionChance = Math.random();
+		if (reflectionChance > 0.66) {
+			reflectX = true; 
+		} else if (reflectionChance > 0.33) {
+			reflectY = true; 
 		} else {
-			reflectY = true; // 25% chance overall
-		}
+            reflectX = true;
+            reflectY = true; 
+        }
 	}
-	// 50% chance of no reflection
 
 	// Convert angles to radians
 	const angleInRadians = (adjustedAngle * Math.PI) / 180;
