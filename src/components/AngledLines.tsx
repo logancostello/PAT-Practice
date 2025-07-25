@@ -16,7 +16,7 @@ type AngleLinesProps = {
 
 type Point3D = [number, number, number];
 
-export function AngledLinesScene({ angleInput, rotation, size, label }: AngleLinesProps) {
+export function AngledLines({ angleInput, rotation, size, label }: AngleLinesProps) {
 	const CAMERA_Z = 5;
 	const FOV = 75;
 	const ASPECT_RATIO = 1;
