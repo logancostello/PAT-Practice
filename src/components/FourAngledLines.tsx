@@ -12,7 +12,6 @@ type FourAngledLinesProps = {
 
 export function FourAngledLines({ trueAngle, angleOffset }: FourAngledLinesProps) {
 
-    const BASE_LENGTH = 3;
     const randomRotation: number = Math.random() * 360;
 
     const potentialAngles: number[] = [
