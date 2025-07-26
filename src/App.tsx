@@ -1,10 +1,13 @@
-import './App.css'
-import { FourAngledLines } from './components/FourAngledLines'
+import "./App.css";
+import { AngleQuestion } from "./components/AngleQuestion";
+import { Provider } from "./components/ui/provider";
 
 function App() {
   return (
-    <FourAngledLines trueAngle={90} angleOffset={5} />
-  )
+    <Provider>
+      <AngleQuestion />
+    </Provider>
+  );
 }
 
-export default App
+export default App;
