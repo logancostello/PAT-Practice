@@ -33,29 +33,29 @@ export function FourAngledLines({ trueAngle, angleOffset }: FourAngledLinesProps
     const angle4 = popRandomElement(fourAngles);
 
     return (
-        <div style={{ display: 'flex', gap: '5px' }}>
+        <div style={{ display: 'flex' }}>
             <AngledLines 
                 angle={angle1} 
                 rotation={randomRotation}
-                size={200} 
+                size={250} 
                 label={angle1} 
             />
             <AngledLines 
                 angle={angle2} 
                 rotation={randomRotation}
-                size={200} 
+                size={250} 
                 label={angle2} 
             />
             <AngledLines 
                 angle={angle3} 
                 rotation={randomRotation}
-                size={200} 
+                size={250} 
                 label={angle3} 
             />
             <AngledLines 
                 angle={angle4} 
                 rotation={randomRotation}
-                size={200} 
+                size={250} 
                 label={angle4} 
             />
 
