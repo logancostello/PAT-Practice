@@ -6,9 +6,10 @@ import { useState } from "react"
 
 
 export function AngleQuestion() {
+    
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
     const [hasSubmitted, setHasSubmitted] = useState(false);
-    const [answerDetails] = useState(() => generateAngleQuestion(45, 5));
+    const [answerDetails] = useState(() => generateAngleQuestion());
     
     const handleSubmit = () => {
        setHasSubmitted(true);

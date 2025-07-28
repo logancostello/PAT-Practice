@@ -5,7 +5,10 @@ type AngleQuestionDetails = {
 }
 
 // Generates 4 angles and 4 answers (1 correct, 3 incorrect)
-export function generateAngleQuestion(angle: number, offset: number): AngleQuestionDetails {
+export function generateAngleQuestion(): AngleQuestionDetails {
+
+    const angle = Math.floor(Math.random() * (160 - 20 + 1)) + 20; // 20-160
+    const offset = Math.floor(Math.random() * (6 - 2 + 1)) + 2; // 2-6
 
     // Select four angles, including the given angle
     const potentialAngles: number[] = [
