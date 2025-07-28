@@ -1,37 +1,37 @@
-import { VStack, RadioGroup, Box } from "@chakra-ui/react"
-import { useState } from "react"
+import { VStack, RadioGroup } from "@chakra-ui/react"
 
 type AnswerSectionProps = {
-  correctAnswer: string;
-  alternative1: string;
-  alternative2: string;
-  alternative3: string;
+  answers: string[],
+  selectedAnswer: string|null
+  setSelectedAnswer: React.Dispatch<React.SetStateAction<string | null>>
+  correctAnswer: string,
+  hasSubmitted: boolean
 };
 
-export function AnswerSection({correctAnswer, alternative1, alternative2, alternative3 }: AnswerSectionProps) {
-
-  const items = [
-    { value: "A", title: "A", answer: correctAnswer },
-    { value: "B", title: "B", answer: alternative1 },
-    { value: "C", title: "C", answer: alternative2 },
-    { value: "D", title: "D", answer: alternative3 },
-  ];
-
-  const [value, setValue] = useState<string | null>(null)
+export function AnswerSection({ answers, selectedAnswer, setSelectedAnswer, correctAnswer, hasSubmitted }: AnswerSectionProps) {
 
   return (
-    <Box p={6} borderWidth="1px" borderRadius="lg" bg="gray.50">
-      <RadioGroup.Root value={value} onValueChange={(e) => setValue(e.value)}>
-        <VStack gap="6" alignItems="flex-start">
-          {items.map((item) => (
-            <RadioGroup.Item key={item.value} value={item.value}>
+    <RadioGroup.Root value={selectedAnswer} onValueChange={(e) => setSelectedAnswer(e.value)}>
+      <VStack gap="6" alignItems="flex-start">
+        {answers.map((answer, index) => {
+
+          var bg = undefined;
+          if (hasSubmitted) {
+            if (answer === correctAnswer) {
+              bg = "green.200";
+            } else if (answer === selectedAnswer) {
+              bg = "red.200";
+            }
+          }
+          return (
+            <RadioGroup.Item key={answer} value={answer} bg={bg} disabled={hasSubmitted}>
               <RadioGroup.ItemHiddenInput />
               <RadioGroup.ItemIndicator />
-              <RadioGroup.ItemText>{item.title}. {item.answer}</RadioGroup.ItemText>
+              <RadioGroup.ItemText>{String.fromCharCode(65 + index)}. {answer}</RadioGroup.ItemText>
             </RadioGroup.Item>
-          ))}
-        </VStack>
-      </RadioGroup.Root>
-    </Box>
+          );
+        })}
+      </VStack>
+    </RadioGroup.Root>
   );
 }

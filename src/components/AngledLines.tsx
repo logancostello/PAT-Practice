@@ -149,7 +149,6 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 			{/* Angled Lines */}
 			<div style={{ width: `${size}px`, height: `${size}px` }}>
 				<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
-					<color attach="background" args={["lightgray"]} />
 					<ambientLight />
 					<Line points={transformedLine1Points} color="black" lineWidth={2} />
 					<Line points={transformedLine2Points} color="black" lineWidth={2} />
