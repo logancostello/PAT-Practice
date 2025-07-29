@@ -9,10 +9,16 @@ export function AngleQuestion() {
     
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
     const [hasSubmitted, setHasSubmitted] = useState(false);
-    const [answerDetails] = useState(() => generateAngleQuestion());
-    
+    const [answerDetails, setAnswerDetails] = useState(() => generateAngleQuestion());    
+
     const handleSubmit = () => {
        setHasSubmitted(true);
+   };
+
+   const handleNext = () => {
+        setHasSubmitted(false);
+        setSelectedAnswer(null);
+        setAnswerDetails(generateAngleQuestion());
    };
 
     return (
@@ -26,18 +32,36 @@ export function AngleQuestion() {
                 correctAnswer={answerDetails.correctAnswer}
                 hasSubmitted={hasSubmitted}
                 />
-                 <Flex justify="flex-end">
-                    <Button 
-                        onClick={handleSubmit}
-                        disabled={!selectedAnswer}
-                        bg="gray.800"
-                        color="white"
-                        _hover={{bg: "gray.900"}}
-                        fontWeight="bold" 
-                        fontSize="md"
-                    >
-                        Submit
-                    </Button>
+                 <Flex justify="flex-end" gap={2}>
+                    {!hasSubmitted ? 
+                        <Button 
+                            onClick={handleSubmit}
+                            disabled={!selectedAnswer}
+                            bg="gray.800"
+                            color="white"
+                            _hover={{bg: "gray.900"}}
+                            fontWeight="bold" 
+                            fontSize="md"
+                            flex="1"
+                            maxWidth={"100px"}
+
+                        >
+                            Submit
+                        </Button>
+                        :
+                        <Button 
+                            onClick={handleNext}
+                            bg="gray.800"
+                            color="white"
+                            _hover={{bg: "gray.900"}}
+                            fontWeight="bold" 
+                            fontSize="md"
+                            flex="1"
+                            maxWidth={"100px"}
+                        >
+                            Next
+                        </Button>
+                    }
                 </Flex>
             </Stack>
         </Box>
