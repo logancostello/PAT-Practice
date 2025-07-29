@@ -1,19 +1,21 @@
 import { Line } from "@react-three/drei";
 import { Canvas } from '@react-three/fiber';
-
+import { useMemo } from "react";
 
 
 type AngleLinesProps = {
 	angle: number;
 	rotation: number; // rotation in degrees
 	size: number;     // pixels
-	label: number;
+	label: string;
+	hasSubmitted: boolean;
 };
 
 type Point3D = [number, number, number];
 
-export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
+export function AngledLines({ angle, rotation, size, label, hasSubmitted }: AngleLinesProps) {
     const BASE_LENGTH = 3;
+	const EXTENDED_LINE_LENGTH = 1.5; // This will be consistent in final scaled units
 	const CAMERA_Z = 5;
 	const FOV = 75;
 	const ASPECT_RATIO = 1;
@@ -22,37 +24,57 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 	const RANDOM_ROTATION_RANGE = 0.35;
 	const RANDOM_LENGTH_RANGE = 2.25;
 
-	// Add small random adjustments to inputs
-	const adjustedAngle = angle + (Math.random() - 0.5) * 10; // ±5 degrees
-	const adjustedRotation = rotation + (Math.random() - 0.5) * 20; // ±10 degrees
-	const adjustedLine1Length = BASE_LENGTH - Math.random() * RANDOM_LENGTH_RANGE;
-	const adjustedLine2Length = BASE_LENGTH - Math.random() * RANDOM_LENGTH_RANGE;
+	// Memoize the random angles so they dont change when parents update
+	const randomValues = useMemo(() => {
+		// Add small random adjustments to inputs
+		const adjustedAngle = angle + (Math.random() - 0.5) * 10; // ±5 degrees
+		const adjustedRotation = rotation + (Math.random() - 0.5) * 20; // ±10 degrees
+		const adjustedLine1Length = BASE_LENGTH - Math.random() * RANDOM_LENGTH_RANGE;
+		const adjustedLine2Length = BASE_LENGTH - Math.random() * RANDOM_LENGTH_RANGE;
 
-	// Randomly add reflections
-    // 1/2 chance of nothing
-    // 1/6 chance of just x reflection
-    // 1/6 chance of just y reflection
-    // 1/6 chance of both reflections
-	let reflectX = false;
-	let reflectY = false;
+		// Generate random transformation values
+		const randomTranslateX = (Math.random() - 0.5) * RANDOM_TRANSLATE_RANGE;
+		const randomTranslateY = (Math.random() - 0.5) * RANDOM_TRANSLATE_RANGE;
+		const randomRotationZ = (Math.random() - 0.5) * RANDOM_ROTATION_RANGE;
 
-	if (Math.random() > 0.5) { 
-        const reflectionChance = Math.random();
-		if (reflectionChance > 0.66) {
-			reflectX = true; 
-		} else if (reflectionChance > 0.33) {
-			reflectY = true; 
-		} else {
-            reflectX = true;
-            reflectY = true; 
-        }
-	}
+		// Randomly add reflections
+		// 1/2 chance of nothing
+		// 1/6 chance of just x reflection
+		// 1/6 chance of just y reflection
+		// 1/6 chance of both reflections
+		let reflectX = false;
+		let reflectY = false;
+
+		if (Math.random() > 0.5) { 
+			const reflectionChance = Math.random();
+			if (reflectionChance > 0.66) {
+				reflectX = true; 
+			} else if (reflectionChance > 0.33) {
+				reflectY = true; 
+			} else {
+				reflectX = true;
+				reflectY = true; 
+			}
+		}
+
+		return {
+			adjustedAngle,
+			adjustedRotation,
+			adjustedLine1Length,
+			adjustedLine2Length,
+			randomTranslateX,
+			randomTranslateY,
+			randomRotationZ,
+			reflectX,
+			reflectY
+		};
+	}, [angle, rotation]);
 
 	// Convert angles to radians
-	const angleInRadians = (adjustedAngle * Math.PI) / 180;
-	const rotationInRadians = (adjustedRotation * Math.PI) / 180;
-	const reflectXFactor = reflectX ? -1 : 1;
-	const reflectYFactor = reflectY ? -1 : 1;
+	const angleInRadians = (randomValues.adjustedAngle * Math.PI) / 180;
+	const rotationInRadians = (randomValues.adjustedRotation * Math.PI) / 180;
+	const reflectXFactor = randomValues.reflectX ? -1 : 1;
+	const reflectYFactor = randomValues.reflectY ? -1 : 1;
 
 	// Calculate visible world dimensions
 	const vFOV = (FOV * Math.PI) / 180;
@@ -64,7 +86,7 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 	const cos = Math.cos(rotationInRadians);
 	const sin = Math.sin(rotationInRadians);
 
-	const end1BeforeRotation: Point3D = [adjustedLine1Length, 0, 0];
+	const end1BeforeRotation: Point3D = [randomValues.adjustedLine1Length, 0, 0];
 	const end1: Point3D = [
 		end1BeforeRotation[0] * cos - end1BeforeRotation[1] * sin,
 		end1BeforeRotation[0] * sin + end1BeforeRotation[1] * cos,
@@ -72,8 +94,8 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 	];
 
 	const end2BeforeRotation: Point3D = [
-		adjustedLine2Length * Math.cos(angleInRadians),
-		adjustedLine2Length * Math.sin(angleInRadians),
+		randomValues.adjustedLine2Length * Math.cos(angleInRadians),
+		randomValues.adjustedLine2Length * Math.sin(angleInRadians),
 		0
 	];
 	const end2: Point3D = [
@@ -112,61 +134,121 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 		0
 	];
 
-	const line1Points: Point3D[] = [
-		createScaledPoint(0, 0),
-		createScaledPoint(end1[0], end1[1])
-	];
-
-	const line2Points: Point3D[] = [
-		createScaledPoint(0, 0),
-		createScaledPoint(end2[0], end2[1])
-	];
-
-	// Generate random transformation values
-	const randomTranslateX = (Math.random() - 0.5) * RANDOM_TRANSLATE_RANGE;
-	const randomTranslateY = (Math.random() - 0.5) * RANDOM_TRANSLATE_RANGE;
-	const randomRotationZ = (Math.random() - 0.5) * RANDOM_ROTATION_RANGE;
-
 	// Apply random transformation to a point
 	const applyTransform = (point: Point3D): Point3D => {
 		const [x, y, z] = point;
-		const transformCos = Math.cos(randomRotationZ);
-		const transformSin = Math.sin(randomRotationZ);
+		const transformCos = Math.cos(randomValues.randomRotationZ);
+		const transformSin = Math.sin(randomValues.randomRotationZ);
 
 		return [
-			x * transformCos - y * transformSin + randomTranslateX,
-			x * transformSin + y * transformCos + randomTranslateY,
+			x * transformCos - y * transformSin + randomValues.randomTranslateX,
+			x * transformSin + y * transformCos + randomValues.randomTranslateY,
 			z
 		];
 	};
 
-	// Transform all points
-	const transformedLine1Points = line1Points.map(applyTransform);
-	const transformedLine2Points = line2Points.map(applyTransform);
+	if (!hasSubmitted) {
+		// Original behavior
+		const line1Points: Point3D[] = [
+			createScaledPoint(0, 0),
+			createScaledPoint(end1[0], end1[1])
+		];
 
-	return (
-		<div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
-			{/* Angled Lines */}
-			<div style={{ width: `${size}px`, height: `${size}px` }}>
-				<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
-					<ambientLight />
-					<Line points={transformedLine1Points} color="black" lineWidth={2} />
-					<Line points={transformedLine2Points} color="black" lineWidth={2} />
-				</Canvas>
+		const line2Points: Point3D[] = [
+			createScaledPoint(0, 0),
+			createScaledPoint(end2[0], end2[1])
+		];
+
+		// Transform all points
+		const transformedLine1Points = line1Points.map(applyTransform);
+		const transformedLine2Points = line2Points.map(applyTransform);
+
+		return (
+			<div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
+				{/* Angled Lines */}
+				<div style={{ width: `${size}px`, height: `${size}px` }}>
+					<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
+						<ambientLight />
+						<Line points={transformedLine1Points} color="black" lineWidth={2} />
+						<Line points={transformedLine2Points} color="black" lineWidth={2} />
+					</Canvas>
+				</div>
+				{/* Label Number */}
+				<div style={{
+					position: 'absolute',
+					bottom: '4px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					fontSize: '18px',
+					fontWeight: 'bold',
+					color: 'black',
+					pointerEvents: 'none'
+				}}>
+					{label}
+				</div>
 			</div>
-			{/* Label Number */}
-			<div style={{
-				position: 'absolute',
-				bottom: '4px',
-				left: '50%',
-				transform: 'translateX(-50%)',
-				fontSize: '18px',
-				fontWeight: 'bold',
-				color: 'black',
-				pointerEvents: 'none'
-			}}>
-				{label}
+		);
+	} else {
+		// Extended line behavior - calculate extension after scaling for consistent length
+		const scaledEnd1 = createScaledPoint(end1[0], end1[1]);
+		const scaledOrigin = createScaledPoint(0, 0);
+		
+		// Calculate direction vector from origin to end1 (normalized)
+		const dx = scaledEnd1[0] - scaledOrigin[0];
+		const dy = scaledEnd1[1] - scaledOrigin[1];
+		const length = Math.sqrt(dx * dx + dy * dy);
+		const directionX = dx / length;
+		const directionY = dy / length;
+		
+		// Create extended point in opposite direction with consistent length
+		const extendedPoint: Point3D = [
+			scaledOrigin[0] - directionX * EXTENDED_LINE_LENGTH,
+			scaledOrigin[1] - directionY * EXTENDED_LINE_LENGTH,
+			0
+		];
+
+		// Line 1 - first half (solid)
+		const line1SolidPoints: Point3D[] = [scaledOrigin, scaledEnd1];
+
+		// Line 1 - second half (dashed) - extending in opposite direction from origin
+		const line1DashedPoints: Point3D[] = [scaledOrigin, extendedPoint];
+
+		// Line 2 (same as before)
+		const line2Points: Point3D[] = [
+			createScaledPoint(0, 0),
+			createScaledPoint(end2[0], end2[1])
+		];
+
+		// Transform all points
+		const transformedLine1SolidPoints = line1SolidPoints.map(applyTransform);
+		const transformedLine1DashedPoints = line1DashedPoints.map(applyTransform);
+		const transformedLine2Points = line2Points.map(applyTransform);
+
+		return (
+			<div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
+				{/* Angled Lines */}
+				<div style={{ width: `${size}px`, height: `${size}px` }}>
+					<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
+						<ambientLight />
+						<Line points={transformedLine1SolidPoints} color="black" lineWidth={2} />
+						<Line points={transformedLine1DashedPoints} color="red" lineWidth={2} dashed dashSize={0.1} gapSize={0.05} />
+						<Line points={transformedLine2Points} color="black" lineWidth={2} />
+					</Canvas>
+				</div>
+				{/* Label Number */}
+				<div style={{
+					position: 'absolute',
+					bottom: '4px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					fontSize: '18px',
+					fontWeight: 'bold',
+					color: 'black',
+					pointerEvents: 'none'
+				}}>
+					{label}
+				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 }
