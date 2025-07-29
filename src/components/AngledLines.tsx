@@ -8,12 +8,14 @@ type AngleLinesProps = {
 	rotation: number; // rotation in degrees
 	size: number;     // pixels
 	label: string;
+	hasSubmitted: boolean;
 };
 
 type Point3D = [number, number, number];
 
-export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
+export function AngledLines({ angle, rotation, size, label, hasSubmitted }: AngleLinesProps) {
     const BASE_LENGTH = 3;
+	const EXTENDED_LINE_LENGTH = 1.5; // This will be consistent in final scaled units
 	const CAMERA_Z = 5;
 	const FOV = 75;
 	const ASPECT_RATIO = 1;
@@ -132,16 +134,6 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 		0
 	];
 
-	const line1Points: Point3D[] = [
-		createScaledPoint(0, 0),
-		createScaledPoint(end1[0], end1[1])
-	];
-
-	const line2Points: Point3D[] = [
-		createScaledPoint(0, 0),
-		createScaledPoint(end2[0], end2[1])
-	];
-
 	// Apply random transformation to a point
 	const applyTransform = (point: Point3D): Point3D => {
 		const [x, y, z] = point;
@@ -155,33 +147,108 @@ export function AngledLines({ angle, rotation, size, label }: AngleLinesProps) {
 		];
 	};
 
-	// Transform all points
-	const transformedLine1Points = line1Points.map(applyTransform);
-	const transformedLine2Points = line2Points.map(applyTransform);
+	if (!hasSubmitted) {
+		// Original behavior
+		const line1Points: Point3D[] = [
+			createScaledPoint(0, 0),
+			createScaledPoint(end1[0], end1[1])
+		];
 
-	return (
-		<div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
-			{/* Angled Lines */}
-			<div style={{ width: `${size}px`, height: `${size}px` }}>
-				<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
-					<ambientLight />
-					<Line points={transformedLine1Points} color="black" lineWidth={2} />
-					<Line points={transformedLine2Points} color="black" lineWidth={2} />
-				</Canvas>
+		const line2Points: Point3D[] = [
+			createScaledPoint(0, 0),
+			createScaledPoint(end2[0], end2[1])
+		];
+
+		// Transform all points
+		const transformedLine1Points = line1Points.map(applyTransform);
+		const transformedLine2Points = line2Points.map(applyTransform);
+
+		return (
+			<div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
+				{/* Angled Lines */}
+				<div style={{ width: `${size}px`, height: `${size}px` }}>
+					<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
+						<ambientLight />
+						<Line points={transformedLine1Points} color="black" lineWidth={2} />
+						<Line points={transformedLine2Points} color="black" lineWidth={2} />
+					</Canvas>
+				</div>
+				{/* Label Number */}
+				<div style={{
+					position: 'absolute',
+					bottom: '4px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					fontSize: '18px',
+					fontWeight: 'bold',
+					color: 'black',
+					pointerEvents: 'none'
+				}}>
+					{label}
+				</div>
 			</div>
-			{/* Label Number */}
-			<div style={{
-				position: 'absolute',
-				bottom: '4px',
-				left: '50%',
-				transform: 'translateX(-50%)',
-				fontSize: '18px',
-				fontWeight: 'bold',
-				color: 'black',
-				pointerEvents: 'none'
-			}}>
-				{label}
+		);
+	} else {
+		// Extended line behavior - calculate extension after scaling for consistent length
+		const scaledEnd1 = createScaledPoint(end1[0], end1[1]);
+		const scaledOrigin = createScaledPoint(0, 0);
+		
+		// Calculate direction vector from origin to end1 (normalized)
+		const dx = scaledEnd1[0] - scaledOrigin[0];
+		const dy = scaledEnd1[1] - scaledOrigin[1];
+		const length = Math.sqrt(dx * dx + dy * dy);
+		const directionX = dx / length;
+		const directionY = dy / length;
+		
+		// Create extended point in opposite direction with consistent length
+		const extendedPoint: Point3D = [
+			scaledOrigin[0] - directionX * EXTENDED_LINE_LENGTH,
+			scaledOrigin[1] - directionY * EXTENDED_LINE_LENGTH,
+			0
+		];
+
+		// Line 1 - first half (solid)
+		const line1SolidPoints: Point3D[] = [scaledOrigin, scaledEnd1];
+
+		// Line 1 - second half (dashed) - extending in opposite direction from origin
+		const line1DashedPoints: Point3D[] = [scaledOrigin, extendedPoint];
+
+		// Line 2 (same as before)
+		const line2Points: Point3D[] = [
+			createScaledPoint(0, 0),
+			createScaledPoint(end2[0], end2[1])
+		];
+
+		// Transform all points
+		const transformedLine1SolidPoints = line1SolidPoints.map(applyTransform);
+		const transformedLine1DashedPoints = line1DashedPoints.map(applyTransform);
+		const transformedLine2Points = line2Points.map(applyTransform);
+
+		return (
+			<div style={{ position: 'relative', width: `${size}px`, height: `${size}px` }}>
+				{/* Angled Lines */}
+				<div style={{ width: `${size}px`, height: `${size}px` }}>
+					<Canvas camera={{ position: [0, 0, CAMERA_Z] }}>
+						<ambientLight />
+						<Line points={transformedLine1SolidPoints} color="black" lineWidth={2} />
+						<Line points={transformedLine1DashedPoints} color="red" lineWidth={2} dashed dashSize={0.1} gapSize={0.05} />
+						<Line points={transformedLine2Points} color="black" lineWidth={2} />
+					</Canvas>
+				</div>
+				{/* Label Number */}
+				<div style={{
+					position: 'absolute',
+					bottom: '4px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					fontSize: '18px',
+					fontWeight: 'bold',
+					color: 'black',
+					pointerEvents: 'none'
+				}}>
+					{label}
+				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 }
