@@ -39,25 +39,34 @@ export function generateAngleQuestion(): AngleQuestionDetails {
     const correctAnswer: string = correctRanking.join('-'); 
 
     // Generate 3 wrong answers
-    const oneOffWrongAnswers = [
+    const hardWrongAnswers = [
+        // swap neighbors
         [correctRanking[1], correctRanking[0], correctRanking[2], correctRanking[3]],
         [correctRanking[0], correctRanking[2], correctRanking[1], correctRanking[3]],
         [correctRanking[0], correctRanking[1], correctRanking[3], correctRanking[2]],
     ]
 
-    const twoOffWrongAnswers = [
+    const mediumWrongAnswers = [
+        // Bump angle over by 2
         [correctRanking[1], correctRanking[2], correctRanking[0], correctRanking[3]],
         [correctRanking[0], correctRanking[2], correctRanking[3], correctRanking[1]],
         [correctRanking[0], correctRanking[3], correctRanking[1], correctRanking[2]],
         [correctRanking[2], correctRanking[0], correctRanking[1], correctRanking[3]],
     ];
 
+    const easyWrongAnswers = [
+        // swap non neighbors
+        [correctRanking[2], correctRanking[1], correctRanking[0], correctRanking[3]],
+        [correctRanking[0], correctRanking[3], correctRanking[2], correctRanking[1]],
+        [correctRanking[3], correctRanking[1], correctRanking[2], correctRanking[0]],
+    ]
+
     // Shuffle the answers in a random order
     const answers = [
         correctAnswer, 
-        selectWrongAnswer(oneOffWrongAnswers, twoOffWrongAnswers),
-        selectWrongAnswer(oneOffWrongAnswers, twoOffWrongAnswers),
-        selectWrongAnswer(oneOffWrongAnswers, twoOffWrongAnswers),
+        selectWrongAnswer(hardWrongAnswers, mediumWrongAnswers, easyWrongAnswers),
+        selectWrongAnswer(hardWrongAnswers, mediumWrongAnswers, easyWrongAnswers),
+        selectWrongAnswer(hardWrongAnswers, mediumWrongAnswers, easyWrongAnswers),
     ];
 
     const answer1 = popRandomElement(answers);
@@ -69,12 +78,15 @@ export function generateAngleQuestion(): AngleQuestionDetails {
     return {angles: shuffledFourAngles, answers: shuffledAnswers, correctAnswer: correctAnswer};
 }
 
-function selectWrongAnswer(oneOffWrongAnswers: number[][], twoOffWrongAnswers: number[][]): string {
+function selectWrongAnswer(hard: number[][], medium: number[][], easy: number[][]): string {
+    // On average, there will be 1.5 hard wrong answers, 1 medium wrong answer, and 0.5 easy wrong answers
     const rand = Math.random();
-    if (rand < 0.7) { // 70% chance for first 3 options
-        return popRandomElement(oneOffWrongAnswers).join('-');
-    } else { // 30% chance for remaining options
-        return popRandomElement(twoOffWrongAnswers).join('-');
+    if (rand < 0.5) { // 50% chance of hard 
+        return popRandomElement(hard).join('-');
+    } else if (rand < 0.8333) { // 30% chance of medium
+        return popRandomElement(medium).join('-');
+    } else {
+        return popRandomElement(easy).join('-');
     }
 
 }   
