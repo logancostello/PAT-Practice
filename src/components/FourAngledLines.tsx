@@ -16,7 +16,7 @@ export function FourAngledLines({ angles, hasSubmitted }: FourAngledLinesProps) 
                 angle={a} 
                 rotation={randomRotation}
                 size={250} 
-                label={(i + 1) + (hasSubmitted ? ". " + a : "")}
+                label={(i + 1) + (hasSubmitted ? ". " + a + "°" : "")}
                 hasSubmitted={hasSubmitted} 
                 />
         )}
