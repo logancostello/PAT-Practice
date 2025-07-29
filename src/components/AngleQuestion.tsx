@@ -24,7 +24,7 @@ export function AngleQuestion() {
     return (
         <Box p={6} borderWidth="1px" borderRadius="lg" bg="gray.50">
             <Stack separator={<StackSeparator />}>
-                <FourAngledLines angles={answerDetails.angles}/>
+                <FourAngledLines angles={answerDetails.angles} hasSubmitted={hasSubmitted}/>
                 <AnswerSection 
                 answers={answerDetails.answers} 
                 selectedAnswer={selectedAnswer} 

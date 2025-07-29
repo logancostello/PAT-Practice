@@ -1,41 +1,24 @@
 import { AngledLines } from "./AngledLines";
-import { memo } from "react";
+import { useMemo } from "react";
 
 type FourAngledLinesProps = {
     angles: number[];
+    hasSubmitted: boolean;
 }
 
-export const FourAngledLines = memo(function FourAngledLines({ angles }: FourAngledLinesProps) {
-    const randomRotation: number = Math.random() * 360;
+export function FourAngledLines({ angles, hasSubmitted }: FourAngledLinesProps) {
+    const randomRotation: number = useMemo(() => Math.random() * 360, [angles]);
 
     return (
         <div style={{ display: 'flex' }}>
-            <AngledLines 
-                angle={angles[0]} 
+            {angles.map((a, i) => 
+                <AngledLines 
+                angle={a} 
                 rotation={randomRotation}
                 size={250} 
-                label={1} 
-            />
-            <AngledLines 
-                angle={angles[1]} 
-                rotation={randomRotation}
-                size={250} 
-                label={2} 
-            />
-            <AngledLines 
-                angle={angles[2]} 
-                rotation={randomRotation}
-                size={250} 
-                label={3} 
-            />
-            <AngledLines 
-                angle={angles[3]} 
-                rotation={randomRotation}
-                size={250} 
-                label={4} 
-            />
-
-        </div>    
-       )
-    }
-)
+                label={(i + 1) + (hasSubmitted ? ". " + a : "")} 
+                />
+        )}
+    </div>    
+    )
+}
