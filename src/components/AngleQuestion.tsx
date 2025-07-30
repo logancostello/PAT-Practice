@@ -1,6 +1,6 @@
 import { FourAngledLines } from "./FourAngledLines"
 import { AnswerSection } from "./AnswerSection"
-import { Box, Stack, StackSeparator, Button, Flex } from "@chakra-ui/react"
+import { Box, Stack, Separator, Button, Flex, Text, Heading } from "@chakra-ui/react"
 import { generateAngleQuestion } from "../AngleQuestionGenerator"
 import { useState } from "react"
 
@@ -23,8 +23,17 @@ export function AngleQuestion() {
 
     return (
         <Box p={6} borderWidth="1px" borderRadius="lg" bg="gray.50">
-            <Stack separator={<StackSeparator />}>
+            <Stack>
+                <Heading size="3xl" fontWeight="bold" color={"gray.700"}>
+                    Angle Ranking
+                </Heading>
                 <FourAngledLines angles={answerDetails.angles} hasSubmitted={hasSubmitted}/>
+                <Separator />
+                <Flex justify="flex-start" gap={2} pb={2}>
+                    <Text fontWeight="semibold" textStyle="md" color={"gray.700"}>
+                        Rank the angles from smallest to largest
+                    </Text>
+                </Flex>
                 <AnswerSection 
                 answers={answerDetails.answers} 
                 selectedAnswer={selectedAnswer} 
@@ -32,7 +41,7 @@ export function AngleQuestion() {
                 correctAnswer={answerDetails.correctAnswer}
                 hasSubmitted={hasSubmitted}
                 />
-                 <Flex justify="flex-end" gap={2}>
+                 <Flex justify="flex-end">
                     {!hasSubmitted ? 
                         <Button 
                             onClick={handleSubmit}
