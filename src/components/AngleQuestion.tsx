@@ -2,17 +2,33 @@ import { FourAngledLines } from "./FourAngledLines"
 import { AnswerSection } from "./AnswerSection"
 import { Box, Stack, Separator, Button, Flex, Text, Heading } from "@chakra-ui/react"
 import { generateAngleQuestion } from "../AngleQuestionGenerator"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 
 export function AngleQuestion() {
     
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
     const [hasSubmitted, setHasSubmitted] = useState(false);
-    const [answerDetails, setAnswerDetails] = useState(() => generateAngleQuestion());    
+    const [answerDetails, setAnswerDetails] = useState(() => generateAngleQuestion()); 
+    const [numCorrect, setNumCorrect] = useState(0);
+    const [numAttempted, setNumAttemped] = useState(0);
+    const [startTime, setStartTime] = useState(Date.now());
+    const [totalTime, setTotalTime] = useState(0);
+
+    // Reset start time when a new question is generated
+    useEffect(() => {
+        setStartTime(Date.now());
+    }, [answerDetails]);
 
     const handleSubmit = () => {
-       setHasSubmitted(true);
+        const timeSpent = Date.now() - startTime;
+        setTotalTime(totalTime + timeSpent);
+        
+        if (selectedAnswer === answerDetails.correctAnswer) {
+            setNumCorrect(numCorrect + 1);
+        };
+        setNumAttemped(numAttempted + 1);
+        setHasSubmitted(true);
    };
 
    const handleNext = () => {
@@ -20,6 +36,8 @@ export function AngleQuestion() {
         setSelectedAnswer(null);
         setAnswerDetails(generateAngleQuestion());
    };
+
+   const averageTimeSeconds = numAttempted > 0 ? (totalTime / numAttempted / 1000).toFixed(1) : 0;
 
     return (
         <Box p={6} borderWidth="1px" borderRadius="lg" bg="gray.50">
@@ -41,7 +59,16 @@ export function AngleQuestion() {
                 correctAnswer={answerDetails.correctAnswer}
                 hasSubmitted={hasSubmitted}
                 />
-                 <Flex justify="flex-end">
+                <Separator/>
+                <Stack direction="row" justify="space-between" align="center">
+                    <Stack align="flex-start" visibility={numAttempted > 0 ? "true" : "hidden"}>
+                        <Text fontWeight="semibold" textStyle="md" color={"gray.700"} >
+                            Accuracy: {(numCorrect/numAttempted * 100).toFixed()}% ({numCorrect}/{numAttempted})
+                        </Text> 
+                        <Text fontWeight="semibold" textStyle="md" color={"gray.700"}>
+                            Avg time: {averageTimeSeconds} seconds
+                        </Text>
+                    </Stack>
                     {!hasSubmitted ? 
                         <Button 
                             onClick={handleSubmit}
@@ -71,7 +98,7 @@ export function AngleQuestion() {
                             Next
                         </Button>
                     }
-                </Flex>
+                </Stack>
             </Stack>
         </Box>
     )
