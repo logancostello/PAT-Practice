@@ -28,7 +28,7 @@ export function AnswerSection({ answers, selectedAnswer, setSelectedAnswer, corr
       )
     );
 
-    // Clear selection if the selected answer is being crossed out
+    // Clear selection if the selected answer is being crossed out 
     if (answerStates[index].answer === selectedAnswer && !answerStates[index].crossedOut) {
       setSelectedAnswer(null);
     }
