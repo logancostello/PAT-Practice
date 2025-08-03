@@ -39,14 +39,13 @@ export function AnswerSection({ answers, selectedAnswer, setSelectedAnswer, corr
       <VStack gap="6" alignItems="flex-start">
         {answerStates.map((a, index) => {
 
-          var bg = undefined;
+          var bg = "green.200";;
           if (hasSubmitted) {
             if (a.answer === correctAnswer) {
               bg = "green.200";
             } else if (a.answer === selectedAnswer) {
               bg = "red.200";
             }
-            bg = "green.200";
           }
           return (
             <RadioGroup.Item 
