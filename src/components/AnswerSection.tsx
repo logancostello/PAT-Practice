@@ -41,11 +41,11 @@ export function AnswerSection({ answers, selectedAnswer, setSelectedAnswer, corr
 
           var bg = undefined;
           if (hasSubmitted) {
-            // if (a.answer === correctAnswer) {
-            //   bg = "green.200";
-            // } else if (a.answer === selectedAnswer) {
-            //   bg = "red.200";
-            // }
+            if (a.answer === correctAnswer) {
+              bg = "green.200";
+            } else if (a.answer === selectedAnswer) {
+              bg = "red.200";
+            }
             bg = "green.200";
           }
           return (
