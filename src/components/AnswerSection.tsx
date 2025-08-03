@@ -39,7 +39,7 @@ export function AnswerSection({ answers, selectedAnswer, setSelectedAnswer, corr
       <VStack gap="6" alignItems="flex-start">
         {answerStates.map((a, index) => {
 
-          var bg = null;
+          var bg = undefined;
           if (hasSubmitted) {
             if (a.answer === correctAnswer) {
               bg = "green.200";
