@@ -1,8 +1,8 @@
 import "./App.css";
 import { Provider } from "./components/ui/provider";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import { Question } from "./pages/question";
-import { Home } from "./pages/home";
+import { Question } from "./pages/Question";
+import { Home } from "./pages/Home";
 
 function App() {
   return (
