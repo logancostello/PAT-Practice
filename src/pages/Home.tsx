@@ -32,12 +32,7 @@ export function Home() {
       title: "Top-Front-End",
       description: "Coming soon",
       path: "."
-    },
-    {
-      title: "View Recognition",
-      description: "Coming soon",
-      path: "."
-    },
+    }
   ];
 
   return (
