@@ -1,12 +1,19 @@
 import "./App.css";
-import { AngleQuestion } from "./components/AngleQuestion";
 import { Provider } from "./components/ui/provider";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Question } from "./pages/question";
+import { Home } from "./pages/home";
 
 function App() {
   return (
-    <Provider>
-      <AngleQuestion />
-    </Provider>
+    <BrowserRouter basename="/PAT-Practice"> 
+      <Provider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/question/:type" element={<Question/>} />
+        </Routes>
+      </Provider>
+    </BrowserRouter>
   );
 }
 
